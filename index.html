@@ -268,7 +268,7 @@
     <div class="presets" id="presets"></div>
 
     <div class="slider-wrap">
-      <input type="range" id="slider" min="30" max="1800" value="300" step="30" data-step="30">
+      <input type="range" id="slider" min="60" max="1800" value="300" step="60">
       <div class="slider-label" id="sliderLabel">5:00</div>
     </div>
 
@@ -411,7 +411,7 @@
 
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      audioCtx = null;
+      if (audioCtx) { audioCtx.close(); audioCtx = null; }
       $display.className = 'display';
       $alarmText.classList.remove('visible');
       $stopBtn.classList.remove('visible');
@@ -445,8 +445,9 @@
     }
 
     function renderSlider() {
+      $slider.min = 60;
       $slider.max = cfg.sliderMax * 60;
-      $slider.step = Math.max(10, Math.floor(cfg.sliderMax * 60 / 100)) * 10;
+      $slider.step = 60;
       $slider.value = Math.min(parseInt($slider.value) || 300, $slider.max);
       $sliderLabel.textContent = fmtM($slider.value / 60);
     }
