@@ -328,6 +328,7 @@
       $display.className = 'display';
       if (timerRemain <= 3 && timerRemain > 0) $display.className += ' critical';
       else if (timerRemain <= 10 && timerRemain > 0) $display.className += ' urgent';
+      if (timerRemain > 0) document.title = fmt(timerRemain) + ' · Easy Timer';
     }
 
     // ── Audio ──
@@ -401,6 +402,7 @@
           timerInterval = null;
           timerRemain = 0;
           updateDisplay();
+          document.title = "TIME'S UP · Easy Timer";
           $display.className = 'display alarm';
           $alarmText.classList.add('visible');
           $stopBtn.classList.add('visible');
@@ -412,6 +414,7 @@
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       if (audioCtx) { audioCtx.close(); audioCtx = null; }
+      document.title = 'Easy Timer';
       $display.className = 'display';
       $alarmText.classList.remove('visible');
       $stopBtn.classList.remove('visible');
