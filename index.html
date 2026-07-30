@@ -278,6 +278,7 @@
     let timerTotal = 0;
     let timerRemain = 0;
     let timerInterval = null;
+    let timerDeadline = 0;
     let audioCtx = null;
 
     const $ = s => document.querySelector(s);
@@ -380,16 +381,22 @@
 
     function startTimer(secs) {
       stopTimer();
+      timerDeadline = Date.now() + secs * 1000;
       timerTotal = secs;
-      timerRemain = secs;
+      timerRemain = Math.ceil((timerDeadline - Date.now()) / 1000);
       updateDisplay();
 
       timerInterval = setInterval(() => {
-        timerRemain--;
-        updateDisplay();
-        if (timerRemain === 10) scheduleBeeps(10);
-        else if (timerRemain === 5) scheduleUrgent(5);
-        else if (timerRemain === 3) scheduleCritical(3);
+        const prev = timerRemain;
+        timerRemain = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+
+        if (timerRemain !== prev) {
+          updateDisplay();
+
+          if (prev > 10 && timerRemain <= 10) scheduleBeeps(timerRemain);
+          else if (prev > 5 && timerRemain <= 5) scheduleUrgent(timerRemain);
+          else if (prev > 3 && timerRemain <= 3) scheduleCritical(timerRemain);
+        }
 
         if (timerRemain <= 0) {
           clearInterval(timerInterval);
@@ -401,12 +408,13 @@
           $alarmText.classList.add('visible');
           scheduleAlarm();
         }
-      }, 1000);
+      }, 100);
     }
 
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       if (audioCtx) { audioCtx.close(); audioCtx = null; }
+      timerDeadline = 0;
       timerRemain = 0;
       timerTotal = 0;
       updateDisplay();
@@ -511,6 +519,14 @@
     // ── Init ──
     renderPresets();
     renderSlider();
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && timerInterval && timerDeadline) {
+        const prev = timerRemain;
+        timerRemain = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        if (timerRemain !== prev) updateDisplay();
+      }
+    });
   </script>
 </body>
 </html>
