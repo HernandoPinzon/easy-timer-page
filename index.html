@@ -216,12 +216,6 @@
       font-size: 1.1rem;
       cursor: pointer;
       transition: all 0.2s;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .stop-btn.visible {
-      opacity: 1;
-      pointer-events: all;
     }
     .stop-btn:hover {
       background: #f85149;
@@ -272,7 +266,7 @@
       <div class="slider-label" id="sliderLabel">5:00</div>
     </div>
 
-    <button class="stop-btn" id="stopBtn">Stop</button>
+    <button class="stop-btn" id="stopBtn">&#x23F9;</button>
   </div>
 
   <script>
@@ -405,7 +399,6 @@
           document.title = "TIME'S UP · Easy Timer";
           $display.className = 'display alarm';
           $alarmText.classList.add('visible');
-          $stopBtn.classList.add('visible');
           scheduleAlarm();
         }
       }, 1000);
@@ -414,10 +407,12 @@
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       if (audioCtx) { audioCtx.close(); audioCtx = null; }
+      timerRemain = 0;
+      timerTotal = 0;
+      updateDisplay();
       document.title = 'Easy Timer';
       $display.className = 'display';
       $alarmText.classList.remove('visible');
-      $stopBtn.classList.remove('visible');
     }
 
     // ── UI ──
